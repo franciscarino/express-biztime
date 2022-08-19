@@ -53,4 +53,21 @@ router.get("/:id", async function (req, res) {
   return res.json({ invoice });
 });
 
+/**
+ * Adds an invoice.
+ * Returns: {invoice: {id, comp_code, amt, paid, add_date, paid_date}}
+ */
+router.post("/", async function (req, res, next) {
+  const { comp_code, amt } = req.body;
+  const results = await db.query(
+    `INSERT INTO invoices (comp_code, amt)
+         VALUES ($1, $2)
+         RETURNING id, comp_code, amt, paid, add_date, paid_date`,
+    [comp_code, amt]
+  );
+  const invoice = results.rows[0];
+
+  return res.json({ invoice });
+});
+
 module.exports = router;
